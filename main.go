@@ -34,9 +34,10 @@ func runService(db *gorm.DB) error {
 
 	appCtx := component.NewAppContext(db)
 
-	restaurants := r.Group("restaurant")
+	restaurants := r.Group("restaurants")
 	{
 		restaurants.POST("", ginrestaurant.CreateRestaurant(appCtx))
+		restaurants.GET("", ginrestaurant.ListRestaurant(appCtx))
 	}
 
 	return r.Run(":8080")
