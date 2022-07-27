@@ -1,9 +1,9 @@
 package restaurantbiz
 
 import (
+	"be-go-delivery-food/common"
 	"be-go-delivery-food/modules/restaurant/restaurantmodel"
 	"context"
-	"errors"
 )
 
 type UpdateRestaurantStore interface {
@@ -26,11 +26,14 @@ func (biz *updateRestaurant) UpdateRestaurant(ctx context.Context, id int, data 
 	oldData, err := biz.store.FindDataByCondition(ctx, map[string]interface{}{"id": id})
 
 	if err != nil {
-		return err
+		if err == common.RecordNotFound {
+			return common.ErrEntityNotFound(restaurantmodel.EntityName, err)
+		}
+		return common.ErrEntityNotFound(restaurantmodel.EntityName, err)
 	}
 
 	if oldData.Status == 0 {
-		return errors.New("data deleted")
+		return common.ErrEntityDeleted(restaurantmodel.EntityName, err)
 	}
 
 	if err := biz.store.UpdateData(ctx, id, data); err != nil {

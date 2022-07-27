@@ -7,6 +7,7 @@ import (
 	"be-go-delivery-food/modules/restaurant/restaurantmodel"
 	"be-go-delivery-food/modules/restaurant/restaurantstorage"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func ListRestaurant(appCtx component.AppContext) gin.HandlerFunc {
@@ -14,19 +15,13 @@ func ListRestaurant(appCtx component.AppContext) gin.HandlerFunc {
 		var filter restaurantmodel.Filter
 
 		if err := ctx.ShouldBind(&filter); err != nil {
-			ctx.JSON(401, gin.H{
-				"error": err.Error(),
-			})
-			return
+			panic(common.ErrInvalidRequest(err))
 		}
 
 		var paging common.Paging
 
 		if err := ctx.ShouldBind(&paging); err != nil {
-			ctx.JSON(401, gin.H{
-				"error": err.Error(),
-			})
-			return
+			panic(common.ErrInvalidRequest(err))
 		}
 
 		paging.Fulfill()
@@ -35,13 +30,9 @@ func ListRestaurant(appCtx component.AppContext) gin.HandlerFunc {
 		biz := restaurantbiz.NewListRestaurantBiz(store)
 		result, err := biz.ListRestaurant(ctx.Request.Context(), &filter, &paging)
 		if err != nil {
-			ctx.JSON(401, gin.H{
-				"error": err.Error(),
-			})
-
-			return
+			panic(err)
 		}
 
-		ctx.JSON(200, common.NewSuccessResponse(result, paging, filter))
+		ctx.JSON(http.StatusOK, common.NewSuccessResponse(result, paging, filter))
 	}
 }

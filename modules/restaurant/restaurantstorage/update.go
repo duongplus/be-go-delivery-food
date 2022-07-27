@@ -1,6 +1,7 @@
 package restaurantstorage
 
 import (
+	"be-go-delivery-food/common"
 	"be-go-delivery-food/modules/restaurant/restaurantmodel"
 	"context"
 )
@@ -8,7 +9,7 @@ import (
 func (s *sqlStore) UpdateData(ctx context.Context, id int, data *restaurantmodel.RestaurantUpdate) error {
 	db := s.db
 	if err := db.Where("id = ?", id).Updates(data).Error; err != nil {
-		return err
+		return common.ErrDB(err)
 	}
 
 	return nil

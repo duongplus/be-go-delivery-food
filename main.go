@@ -2,6 +2,7 @@ package main
 
 import (
 	"be-go-delivery-food/component"
+	"be-go-delivery-food/middleware"
 	"be-go-delivery-food/modules/restaurant/restauranttranport/ginrestaurant"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
@@ -24,15 +25,15 @@ func main() {
 }
 
 func runService(db *gorm.DB) error {
+	appCtx := component.NewAppContext(db)
 	r := gin.Default()
+	r.Use(middleware.Recover(appCtx))
 
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, map[string]interface{}{
 			"message": "pong",
 		})
 	})
-
-	appCtx := component.NewAppContext(db)
 
 	restaurants := r.Group("restaurants")
 	{
