@@ -28,7 +28,7 @@ func (s *sqlStore) ListDataByCondition(ctx context.Context,
 		}
 	}
 
-	if err := db.Table(restaurantmodel.Restaurant{}.TableName()).Count(&paging.Total).Error; err != nil {
+	if err := db.Table(restaurantmodel.Restaurant{}.TableName()).Where("status = 1").Count(&paging.Total).Error; err != nil {
 		return nil, err
 	}
 
