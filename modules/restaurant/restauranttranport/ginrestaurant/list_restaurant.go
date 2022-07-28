@@ -33,6 +33,14 @@ func ListRestaurant(appCtx component.AppContext) gin.HandlerFunc {
 			panic(err)
 		}
 
+		for i := range result {
+			result[i].Mask(false)
+
+			if i == len(result)-1 {
+				paging.NextCursor = result[i].FakeId.String()
+			}
+		}
+
 		ctx.JSON(http.StatusOK, common.NewSuccessResponse(result, paging, filter))
 	}
 }

@@ -8,13 +8,12 @@ import (
 	"be-go-delivery-food/modules/restaurant/restaurantstorage"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"strconv"
 )
 
 func UpdateRestaurant(appCtx component.AppContext) gin.HandlerFunc {
 	return func(context *gin.Context) {
-		id, err := strconv.Atoi(context.Param("id"))
-
+		//id, err := strconv.Atoi(context.Param("id"))
+		uid, err := common.FromBase58(context.Param("id"))
 		if err != nil {
 			panic(common.ErrInvalidRequest(err))
 		}
@@ -28,7 +27,7 @@ func UpdateRestaurant(appCtx component.AppContext) gin.HandlerFunc {
 		store := restaurantstorage.NewSQLStore(appCtx.GetMainDBConnection())
 		biz := restaurantbiz.NewUpdateRestaurantStore(store)
 
-		if err := biz.UpdateRestaurant(context.Request.Context(), id, &data); err != nil {
+		if err := biz.UpdateRestaurant(context.Request.Context(), int(uid.GetLocalID()), &data); err != nil {
 			panic(err)
 		}
 
