@@ -1,6 +1,7 @@
 package main
 
 import (
+	"be-go-delivery-food/modules/restaurant/transport/ginrestaurant"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
@@ -34,27 +35,7 @@ func runService(db *gorm.DB) error {
 
 	restaurants := r.Group("restaurants")
 	{
-		restaurants.POST("", func(c *gin.Context) {
-			var data Restaurant
-			if err := c.ShouldBind(&data); err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{
-					"error": err.Error(),
-				})
-				return
-			}
-
-			if err := db.Create(&data).Error; err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{
-					"error": err.Error(),
-				})
-				return
-			}
-
-			c.JSON(http.StatusOK, gin.H{
-				"message": "OK",
-				"data":    data,
-			})
-		})
+		restaurants.POST("", ginrestaurant.CreateRestaurant(db))
 
 		restaurants.GET("/:id", func(c *gin.Context) {
 			id, err := strconv.Atoi(c.Param("id"))
